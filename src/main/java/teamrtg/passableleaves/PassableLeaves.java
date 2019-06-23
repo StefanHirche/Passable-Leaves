@@ -552,8 +552,5 @@ public class PassableLeaves
             e.printStackTrace();
             FMLCommonHandler.instance().exitJava(77, true);
         }
-
-        oldLeafEdit.setGraphicsLevel(true);
-        newLeafEdit.setGraphicsLevel(true);
     }
 }

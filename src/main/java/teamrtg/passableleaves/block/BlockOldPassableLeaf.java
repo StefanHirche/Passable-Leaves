@@ -1,13 +1,11 @@
 package teamrtg.passableleaves.block;
 
 import net.minecraft.block.BlockOldLeaf;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.block.state.IBlockState;
 
-public class BlockOldPassableLeaf extends BlockOldLeaf {
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void setGraphicsLevel(boolean fancy) {
-        leavesFancy = true;
+public class BlockOldPassableLeaf extends BlockOldLeaf
+{
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
     }
 }
