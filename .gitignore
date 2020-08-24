@@ -1,38 +1,23 @@
-# Ignore everything...
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
-/*
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
 
-# Except...
+# gradle
+/build
+.gradle
 
-# Repo files
-!.github/
-!.gitattributes
-!.gitignore
-!.gitmodules
-
-# Project files
-!src/
-!docs/
-!LICENSE/
-!LICENSE.*
-!README*
-
-# Third-party libraries
-!lib/
-
-# Gradle
-!gradle/
-!gradlew
-!gradlew.bat
-!?*.gradle
-!*.properties
-!gradle.*
-!build.*
-
-# Integrations
-!codeformat/
-!.travis.yml
-
-# Other
-!publish/
-publish/releases/*changelog*
+# other
+/eclipse
+/run
+/server

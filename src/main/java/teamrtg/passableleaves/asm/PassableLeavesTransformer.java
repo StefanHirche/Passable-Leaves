@@ -1,24 +1,12 @@
 package teamrtg.passableleaves.asm;
 
-import net.minecraft.launchwrapper.IClassTransformer;
-
 import com.google.common.collect.Lists;
+import net.minecraft.launchwrapper.IClassTransformer;
 import org.apache.commons.lang3.ArrayUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AnnotationNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.LineNumberNode;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
-
+import org.objectweb.asm.tree.*;
 import teamrtg.passableleaves.asm.PassableLeavesTransformer.Transforms.Fields;
 import teamrtg.passableleaves.asm.PassableLeavesTransformer.Transforms.Methods;
 
@@ -27,62 +15,28 @@ import teamrtg.passableleaves.asm.PassableLeavesTransformer.Transforms.Methods;
  * It was extracted from Appalachia by WhichOnesPink so that it could be a standalone mod.
  * The complete source code for this mod can be found on GitHub.
  * Class: PassableLeavesTransformer
+ *
  * @author HellFirePvP
- * @since 2017.02.12
  * @author srs-bsns
+ * @since 2017.02.12
  * @since 2017.10.04
  */
-public class PassableLeavesTransformer implements IClassTransformer {
+public class PassableLeavesTransformer implements IClassTransformer
+{
 
-    static final class Transforms {
-        private Transforms() {}
-        private static final String[] names = new String[0];
-        enum Methods {
-            // Names must be the deobfuscated method names, These, and/or the obfuscated names, may change over time.
-            getCollisionBoundingBox(
-                "func_180646_a",
-                "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/AxisAlignedBB;"
-            ),
-            isPassable(
-                "func_176205_b",
-                "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)Z"
-            ),
-            onEntityCollidedWithBlock(
-                "func_180634_a",
-                "(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/entity/Entity;)V"
-            );
-            private final String obfName;
-            private final String desc;
-            Methods(String obfName, String desc) {
-                this.obfName = obfName;
-                this.desc = desc;
-                ArrayUtils.add(names, name().toLowerCase());
-            }
-            String getName() { return PassableLeavesCore.isDeobf() ? name() : obfName; }
-            String getDesc() { return desc; }
-            static boolean contains(final String value) { return ArrayUtils.contains(names, value.toLowerCase()); }
-        }
-        enum Fields {
-            NULL_AABB("field_185506_k", "Lnet/minecraft/util/math/AxisAlignedBB;");
-            private final String obfName;
-            private final String desc;
-            Fields(String obfName, String desc) {
-                this.obfName = obfName;
-                this.desc = desc;
-            }
-            String getName() { return PassableLeavesCore.isDeobf() ? this.name() : this.obfName; }
-            String getDesc() { return this.desc; }
-        }
-    }
-
-    public PassableLeavesTransformer() {
+    public PassableLeavesTransformer()
+    {
         PassableLeavesCore.LOGGER.debug("PassableLeavesTransformer Initialized");
     }
 
     @Override
-    public byte[] transform(String name, String transformedName, byte[] basicClass) {
+    public byte[] transform(String name, String transformedName, byte[] basicClass)
+    {
 
-        if(!transformedName.equals("net.minecraft.block.BlockLeaves")) { return basicClass; }
+        if (!transformedName.equals("net.minecraft.block.BlockLeaves"))
+        {
+            return basicClass;
+        }
 
         ClassNode node = new ClassNode();
         ClassReader reader = new ClassReader(basicClass);
@@ -91,8 +45,10 @@ public class PassableLeavesTransformer implements IClassTransformer {
         //Check sanity before doing anything.
         //Potentially also the place where you want to check for configs.
         //Keep in mind this is called well before preInit
-        for (MethodNode mn : node.methods) {
-            if (Methods.contains(mn.name)) {
+        for (MethodNode mn : node.methods)
+        {
+            if (Methods.contains(mn.name))
+            {
                 PassableLeavesCore.LOGGER.error("net.minecraft.block.BlockLeaves was modified by another Class transformer. Not doing changes.");
                 return basicClass;
             }
@@ -170,8 +126,8 @@ public class PassableLeavesTransformer implements IClassTransformer {
         onEntityCollidedWithBlock.instructions.add(new VarInsnNode(Opcodes.ALOAD, 3));
         onEntityCollidedWithBlock.instructions.add(new VarInsnNode(Opcodes.ALOAD, 4));
         onEntityCollidedWithBlock.instructions.add(
-            // This has to point to PassableLeaves#onEntityCollidedWithLeaves
-            new MethodInsnNode(Opcodes.INVOKESTATIC, "teamrtg/passableleaves/PassableLeaves", "onEntityCollidedWithLeaves", Methods.onEntityCollidedWithBlock.getDesc(), false)
+                // This has to point to PassableLeaves#onEntityCollidedWithLeaves
+                new MethodInsnNode(Opcodes.INVOKESTATIC, "teamrtg/passableleaves/PassableLeaves", "onEntityCollidedWithLeaves", Methods.onEntityCollidedWithBlock.getDesc(), false)
         );
         onEntityCollidedWithBlock.instructions.add(new InsnNode(Opcodes.RETURN));
         onEntityCollidedWithBlock.instructions.add(endLabel);
@@ -183,6 +139,79 @@ public class PassableLeavesTransformer implements IClassTransformer {
         basicClass = writer.toByteArray();
 
         return basicClass;
+    }
+
+    static final class Transforms
+    {
+        private static final String[] names = new String[0];
+
+        private Transforms()
+        {
+        }
+
+        enum Methods
+        {
+            // Names must be the deobfuscated method names, These, and/or the obfuscated names, may change over time.
+            getCollisionBoundingBox(
+                    "func_180646_a",
+                    "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/AxisAlignedBB;"
+            ),
+            isPassable(
+                    "func_176205_b",
+                    "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)Z"
+            ),
+            onEntityCollidedWithBlock(
+                    "func_180634_a",
+                    "(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/entity/Entity;)V"
+            );
+            private final String obfName;
+            private final String desc;
+
+            Methods(String obfName, String desc)
+            {
+                this.obfName = obfName;
+                this.desc = desc;
+                ArrayUtils.add(names, name().toLowerCase());
+            }
+
+            static boolean contains(final String value)
+            {
+                return ArrayUtils.contains(names, value.toLowerCase());
+            }
+
+            String getName()
+            {
+                return PassableLeavesCore.isDeobf() ? name() : obfName;
+            }
+
+            String getDesc()
+            {
+                return desc;
+            }
+        }
+
+        enum Fields
+        {
+            NULL_AABB("field_185506_k", "Lnet/minecraft/util/math/AxisAlignedBB;");
+            private final String obfName;
+            private final String desc;
+
+            Fields(String obfName, String desc)
+            {
+                this.obfName = obfName;
+                this.desc = desc;
+            }
+
+            String getName()
+            {
+                return PassableLeavesCore.isDeobf() ? this.name() : this.obfName;
+            }
+
+            String getDesc()
+            {
+                return this.desc;
+            }
+        }
     }
 
 }
